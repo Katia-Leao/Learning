@@ -1,13 +1,4 @@
-/*Crie as entidades de um sistema para gerenciar Alunos, Professores
-
-Professores e alunos deve herdar de uma mesma classe pai
-Alunos e Professores deve possuir dados pessoais(nome, idade, etc.)
-Um professor deve possuir uma disciplina na qual ele ministra
-Um aluno deve possuir um atributo nota do tipo ARRAY.
-A classe aluno deve conter um metodo para adicionar notas.
-A classe aluno deve conter um metodo calcular a média das notas.*/
-
-//import prompt from 'prompt'
+import prompt from 'prompt'
 
 let countStudent: number = 0
 let idStudent: string = ('S-' + countStudent)
@@ -47,38 +38,56 @@ class Student extends Person{
         
     constructor (name:string, cpf: string, birth:string, adress: string, telephone: string, emergencyContact: string, emergencyPhone: string){
         super (name, cpf, birth, adress, telephone, emergencyContact, emergencyPhone)
-        countStudent ++
         idStudent = ('S-' + countStudent)
+        countStudent ++
         this._id = idStudent
     }
 
     insertStudent (student: Student){
         students.push (student)
+        console.log ('Aluno inserido com sucesso.')
     }
 
-    removeStudent (id: string) {
-        const updatedList = students.filter ((s) => s._id != id)
+    removeStudent (nome: string) {
+        const updatedList = students.filter ((s) => s._name != nome)
         students = updatedList
     }
 
-    showStudentInfo () {
+    showStudents () {
         console.table(students)
     }
 
-    set adress (adress1: string) {
-        this._adress = adress1
+    search (nome: string) {
+        const oneStudent = students.filter ((p) => p._name == nome)
+        console.table (oneStudent)
     }
 
-    set telephone (telephone1: string) {
-        this._telephone = telephone1
+    setAdress (nome: string, adress1: string) {
+        let toChange1 = students.find (students => students._name == nome)
+        if(toChange1 != undefined){
+            toChange1._adress = adress1
+        }
     }
 
-    set emergencyContact (contact: string) {
-        this._emergencyContact = contact
+    setTelephone (nome: string, telephone1: string) {
+        let toChange2 = students.find (students => students._name == nome)
+        if(toChange2 != undefined){
+            toChange2._telephone = telephone1
+        }
     }
 
-    set emergencyPhone (phone1: string) {
-        this._emergencyPhone = phone1
+    setContact (nome: string, contact: string) {
+        let toChange3 = students.find (students => students._name == nome)
+        if(toChange3 != undefined){
+            toChange3._emergencyContact = contact
+        }
+    }
+
+    setEmergencyPhone (nome: string, phone1: string) {
+        let toChange4 = students.find (students => students._name == nome)
+        if(toChange4 != undefined){
+            toChange4._emergencyPhone = phone1
+        }
     } 
 
 }
@@ -88,8 +97,8 @@ class Teacher extends Person{
     
     constructor (name:string, cpf: string, birth:string, adress: string, telephone: string, emergencyContact: string, emergencyPhone: string, subject: string){
         super (name, cpf, birth, adress, telephone, emergencyContact, emergencyPhone)
-        countTeacher ++
         idTeacher = ('T-' + countTeacher)
+        countTeacher ++
         this._id = idTeacher
         this.subject = subject
     }
@@ -98,29 +107,46 @@ class Teacher extends Person{
         teachers.push (teacher)
     }
 
-    removeTeacher (id: string) {
-        const updatedList = teachers.filter ((t) => t._id != id)
+    removeTeacher (nome: string) {
+        const updatedList = teachers.filter ((t) => t._name != nome)
         teachers = updatedList
     }
 
-    showTeacherInfo () {
+    showTeachers () {
         console.table(teachers)
     }
 
-    set adress (adress1: string) {
-        this._adress = adress1
+    search (nome: string) {
+        const oneTeacher = teachers.filter ((p) => p._name == nome)
+        console.table (oneTeacher)
     }
 
-    set telephone (telephone1: string) {
-        this._telephone = telephone1
+    setAdress (nome: string, adress1: string) {
+        let toChange1 = teachers.find (teachers => teachers._name == nome)
+        if(toChange1 != undefined){
+            toChange1._adress = adress1
+        }
     }
 
-    set emergencyContact (contact: string) {
-        this._emergencyContact = contact
+    setTelephone (nome: string, telephone1: string) {
+        let toChange2 = teachers.find (teachers => teachers._name == nome)
+        if(toChange2 != undefined){
+            toChange2._telephone = telephone1
+        }
     }
 
-    set emergencyPhone (phone1: string) {
-        this._emergencyPhone = phone1
+    setContact (nome: string, contact: string) {
+        let toChange3 = teachers.find (teachers => teachers._name == nome)
+        if(toChange3 != undefined){
+            toChange3._emergencyContact = contact
+        }
+    }
+
+    setEmergencyPhone (nome: string, phone1: string) {
+        let toChange4 = teachers.find (teachers => teachers._name == nome)
+        if(toChange4 != undefined){
+            toChange4._emergencyPhone = phone1
+        }
     } 
 }
 
@@ -134,8 +160,8 @@ class Note {
     note: number
     
     constructor (studentName: Student['_name'], subject: Teacher['subject'], description: string, note: number) {
-        noteId ++
         this.noteId = noteId
+        noteId ++
         this.studentName = studentName
         this.subject = subject
         this.description = description
@@ -151,6 +177,13 @@ class Note {
         notes = updatedNotes
     }
 
+    changeNote (id: number, note: number){
+        let toChange = notes.find (notes => notes.noteId == id)
+        if(toChange != undefined){
+            toChange.note = note
+        }
+    }
+
     showNote () {
         console.table (notes)
     }
@@ -161,7 +194,7 @@ class Note {
     }
 
     searchBySubject (nome: string){
-        const newList1 = notes.filter ((t) => t.subject == nome)
+        const newList1 = notes.filter ((d) => d.subject == nome)
         console.table (newList1)
     }
 
@@ -173,56 +206,605 @@ class Note {
         } 
         average = soma / newList3.length
         console.table (newList3)
-        console.log (`média da disciplina ${this.subject} para o aluno ${this.studentName}: ${average}`)
+        console.log (`média da disciplina para o aluno: ${average}`)
     }
 }
 
-const aluno1 = new Student ('katia', '000000', '08/02/1987', 'Rua A, 357', '996547852', 'Fulano', '996547852')
-const aluno2 = new Student ('rodolfo', '000000', '08/02/1987', 'Rua A, 357', '996547852', 'Fulano', '996547852')
-const prof1 = new Teacher ('Carlos', '000000', '08/02/1987', 'Rua A, 357', '996547852', 'Fulano', '996547852', 'Lógica')
-const prof2 = new Teacher ('Esdras', '000000', '08/02/1987', 'Rua A, 357', '996547852', 'Fulano', '996547852', 'POO')
-const nota1 = new Note ('katia', 'POO', 'prova 1', 10)
-const nota2 = new Note ('katia', 'POO', 'prova 2', 5)
-const nota3 = new Note ('katia', 'Logica', 'prova 1', 10)
-const nota4 = new Note ('rodolfo', 'POO', 'prova 1', 10)
-aluno2.insertStudent (aluno2)
-aluno2.insertStudent (aluno1)
+//const aluno1 = new Student ('katia', '000000', '08/02/1987', 'Rua A, 357', '996547852', 'Fulano', '996547852')
+//const aluno2 = new Student ('rodolfo', '000000', '08/02/1987', 'Rua A, 357', '996547852', 'Fulano', '996547852')
+//const prof1 = new Teacher ('Carlos', '000000', '08/02/1987', 'Rua A, 357', '996547852', 'Fulano', '996547852', 'Lógica')
+//const prof2 = new Teacher ('Esdras', '000000', '08/02/1987', 'Rua A, 357', '996547852', 'Fulano', '996547852', 'POO')
+//const nota1 = new Note ('katia', 'POO', 'prova 1', 10)
+//const nota2 = new Note ('katia', 'POO', 'prova 2', 5)
+//const nota3 = new Note ('katia', 'Logica', 'prova 1', 10)
+//const nota4 = new Note ('rodolfo', 'POO', 'prova 1', 10)
+//aluno2.insertStudent (aluno2)
+//aluno2.insertStudent (aluno1)
 //aluno2.showStudentInfo()
-prof1.insertTeacher (prof1)
-prof1.insertTeacher (prof2)
+//prof1.insertTeacher (prof1)
+//prof1.insertTeacher (prof2)
 //prof1.showTeacherInfo ()
-nota1.insertNote (nota1)
-nota1.insertNote (nota2)
-nota1.insertNote (nota3)
-nota1.insertNote (nota4)
+//nota1.insertNote (nota1)
+//nota1.insertNote (nota2)
+//nota1.insertNote (nota3)
+//nota1.insertNote (nota4)
 //nota1.showNote ()
 //nota1.searchByStudent ('katia')
 //nota1.searchByTeacher ('Esdras')
-nota1.searchByStudentSubject ('katia', 'POO')
+//nota1.searchByStudentSubject ('katia', 'POO')
 
 
-
-
-
-/*const main = async function () {
+const main = async function () {
     let shouldRun = true
+    let student = new Student('name', 'cpf', 'birth', 'adress', 'telephone', 'emergencyContact', 'emergencyPhone')
+    let teacher = new Teacher('name', 'cpf', 'birth', 'adress', 'telephone', 'emergencyContact', 'emergencyPhone', 'subject')
+    let note = new Note ('studentName', 'subject', 'description', Number('note'))
 
     while (shouldRun) {
-        console.log ('Escolha uma das opções abaixo')
-        console.log ('1. Inserir novo aluno')
-        console.log ('2. Remover aluno')
-        console.log ('3. Ver todos os alunos')
-        console.log ('4. Ver apenas um aluno')
-        console.log ('5. Inserir notas')
-        console.log ('6. Remover notas')
-        console.log ('7. Ver notas de todos os alunos')
-        console.log ('8. Ver notas de apenas um aluno')
-        console.log ('9. Inserir novo professor')
-        console.log ('10. Remover professor')
-        console.log ('11. Ver todos os professores')
-        console.log ('12. Ver apenas um professor')
-        console.log ('13. Sair')
+        console.log ('Escolha uma das opções abaixo:')
+        console.log ('1. Perfil Administrador')
+        console.log ('2. Perfil Professor')
+        console.log ('3. Perfil Aluno')
+        console.log ('4. Sair')
     
-const response = await prompt.get(['option'])
+    const response = await prompt.get(['option'])
+    if (response.option == '4') { break}
+    else{
+        switch (response.option){
+            case '1':
+                let shouldRun1 = true 
+                while (shouldRun1) {
+                console.clear ()
+                console.log ('Escolha uma das opções abaixo:')
+                console.log ('1. Inserir novo aluno')
+                console.log ('2. Inserir novo professor')
+                console.log ('3. Mostrar todos os alunos')
+                console.log ('4. Mostrar todos os professores')
+                console.log ('5. Mostrar dados de apenas um aluno')
+                console.log ('6. Mostrar dados de apenas um professor')
+                console.log ('7. Alterar dados de um aluno existente')
+                console.log ('8. Alterar dados de um professor existente')
+                console.log ('9. Remover um aluno existente')
+                console.log ('10. Remover um professor existente')
+                console.log ('11. Voltar ao menu anterior')
+
+                const response = await prompt.get(['option'])
+
+                if (response.option == '11') { break}
+                else{
+                    switch (response.option) {
+                        case '1':
+                            console.clear ()
+                            console.log ('Insira os dados solicitados abaixo')
+                            const response = await prompt.get(['name', 'cpf', 'birth', 'adress', 'telephone', 'emergencyContact', 'emergencyPhone'])
+                            const adjustedName = response.name.toString()
+                            const adjustedAdress = response.adress.toString()
+                            const adjustedEmergencyContact = response.emergencyContact.toString()
+                
+                            student.insertStudent (new Student (
+                                adjustedName.toUpperCase(),
+                                response.cpf.toString(),
+                                response.birth.toString(),
+                                adjustedAdress.toUpperCase(),
+                                response.telephone.toString(),
+                                adjustedEmergencyContact.toUpperCase(),
+                                response.emergencyPhone.toString()
+                            ))
+                            break;
+           
+                        case '2':
+                            console.clear ()
+                            console.log ('Insira os dados solicitados abaixo')
+                            const response1 = await prompt.get(['name', 'cpf', 'birth', 'adress', 'telephone', 'emergencyContact', 'emergencyPhone', 'subject'])
+                            const adjustedName1 = response1.name.toString()
+                            const adjustedAdress1 = response1.adress.toString()
+                            const adjustedEmergencyContact1 = response1.emergencyContact.toString()
+                            const adjustedSubject = response1.subject.toString()
+                
+                            teacher.insertTeacher (new Teacher (
+                                adjustedName1.toUpperCase(),
+                                response1.cpf.toString(),
+                                response1.birth.toString(),
+                                adjustedAdress1.toUpperCase(),
+                                response1.telephone.toString(),
+                                adjustedEmergencyContact1.toUpperCase(),
+                                response1.emergencyPhone.toString(),
+                                adjustedSubject.toUpperCase()
+                            ))
+                            console.log ('Professor inserido com sucesso.')
+                            break;
+            
+                        case '3':
+                            console.clear ()
+                            console.log ('==== Alunos ====')
+                            student.showStudents ()
+                            console.log('Pressione uma tecla para voltar ao menu anterior...')
+                            await prompt.get(['pressione'])
+                            break;
+
+                        case '4':
+                            console.clear ()
+                            console.log ('==== Professores ====')
+                            teacher.showTeachers ()
+                            console.log('Pressione uma tecla para voltar ao menu anterior...')
+                            await prompt.get(['pressione'])
+                            break;
+
+                        case '5':
+                            console.clear()
+                            console.log('Insira o nome do aluno que deseja visualizar:')
+                            const position1 = await prompt.get(['nome'])
+                            const nameAdjusted1 = position1.nome.toString()
+                            student.search(nameAdjusted1.toUpperCase())
+                            console.log('Pressione uma tecla para voltar ao menu anterior...')
+                            await prompt.get(['pressione'])
+                            break;
+
+                        case '6':
+                            console.clear()
+                            console.log('Insira o nome do professor que deseja visualizar:')
+                            const position2 = await prompt.get(['nome'])
+                            const nameAdjusted = position2.nome.toString()
+                            teacher.search(nameAdjusted.toUpperCase())
+                            console.log('Pressione uma tecla para voltar ao menu anterior...')
+                            await prompt.get(['pressione'])
+                            break;
+            
+                        case '7':
+                            let shouldRun2 = true
+                            while (shouldRun2){            
+                                console.clear ()
+                                console.log ('Qual dado de aluno você deseja alterar?')
+                                console.log ('1. Alterar endereço')
+                                console.log ('2. Alterar telefone')
+                                console.log ('3. Alterar contato de emergência (nome)')
+                                console.log ('4. Alterar telefone de emergência')
+                                console.log ('5. Retornar ao menu anterior')
+
+                                const response = await prompt.get(['option'])              
+                                    switch (response.option) {
+                                        case '1':
+                                            console.clear ()
+                                            console.log('Insira o nome do aluno cujo endereço deseja visualizar:')
+                                            const position = await prompt.get(['nome'])
+                                            const nameAdjusted1 = position.nome.toString()
+                                            student.search(nameAdjusted1.toUpperCase())
+                                            console.log('Insira o novo endereço')
+                                            const position1 = await prompt.get(['endereco'])
+                                            const adressAdjusted = position1.endereco.toString()
+                                            student.setAdress(nameAdjusted1.toUpperCase(), adressAdjusted.toUpperCase())
+                                            console.log ('endereço alterado com sucesso')
+                                            student.search(nameAdjusted1.toUpperCase())
+                                            console.log('Pressione uma tecla para voltar ao menu anterior...')
+                                            await prompt.get(['pressione'])
+                                            break;
+                    
+                                        case '2':
+                                            console.clear ()
+                                            console.log('Insira o nome do aluno cujo telefone deseja visualizar:')
+                                            const position2 = await prompt.get(['nome'])
+                                            const nameAdjusted2 = position2.nome.toString()
+                                            student.search(nameAdjusted2.toUpperCase())
+                                            console.log('Insira o novo telefone')
+                                            const position3 = await prompt.get(['telefone'])
+                                            const telephoneAdjusted = position3.telefone.toString()
+                                            student.setTelephone(nameAdjusted2.toUpperCase(), telephoneAdjusted.toUpperCase())
+                                            console.log ('telefone alterado com sucesso')
+                                            student.search(nameAdjusted2.toUpperCase())
+                                            console.log('Pressione uma tecla para voltar ao menu anterior...')
+                                            await prompt.get(['pressione'])
+                                            break;
+                    
+                                        case '3':
+                                            console.clear ()
+                                            console.log('Insira o nome do aluno cujo contato de emergência deseja visualizar:')
+                                            const position4 = await prompt.get(['nome'])
+                                            const nameAdjusted3 = position4.nome.toString()
+                                            student.search(nameAdjusted3.toUpperCase())
+                                            console.log('Insira o novo nome do contato de emergência')
+                                            const position5 = await prompt.get(['nome'])
+                                            const contactAdjusted = position5.nome.toString()
+                                            student.setContact(nameAdjusted3.toUpperCase(), contactAdjusted.toUpperCase())
+                                            console.log ('contato alterado com sucesso')
+                                            student.search(nameAdjusted3.toUpperCase())
+                                            console.log('Pressione uma tecla para voltar ao menu anterior...')
+                                            await prompt.get(['pressione'])
+                                            break;
+                
+                                        case '4':
+                                            console.clear ()
+                                            console.log('Insira o nome do aluno cujo telefone de emergência deseja visualizar:')
+                                            const position6 = await prompt.get(['nome'])
+                                            const nameAdjusted4 = position6.nome.toString()
+                                            student.search(nameAdjusted4.toUpperCase())
+                                            console.log('Insira o novo telefone de emergência')
+                                            const position7 = await prompt.get(['telefone'])
+                                            const phoneAdjusted = position7.telefone.toString()
+                                            student.setEmergencyPhone(nameAdjusted4.toUpperCase(), phoneAdjusted.toUpperCase())
+                                            console.log ('telefone alterado com sucesso')
+                                            student.search(nameAdjusted4.toUpperCase())
+                                            console.log('Pressione uma tecla para voltar ao menu anterior...')
+                                            await prompt.get(['pressione'])
+                                            break;
+                    
+                                        default:
+                                            break;
+                                } break;
+                            }break;
+            
+                        case '8':
+                            let shouldRun3 = true
+                            while (shouldRun3){            
+                                console.clear ()
+                                console.log ('Qual dado você deseja alterar?')
+                                console.log ('1. Alterar endereço')
+                                console.log ('2. Alterar telefone')
+                                console.log ('3. Alterar contato de emergência (nome)')
+                                console.log ('4. Alterar telefone de emergência')
+                                console.log ('5. Retornar ao menu anterior')
+
+                                const response3 = await prompt.get(['option'])
+                                    switch (response3.option) {
+                                        case '1':
+                                            console.clear ()
+                                            console.log('Insira o nome do professor cujo endereço deseja visualizar:')
+                                            const position = await prompt.get(['nome'])
+                                            const nameAdjusted1 = position.nome.toString()
+                                            teacher.search(nameAdjusted1.toUpperCase())
+                                            console.log('Insira o novo endereço')
+                                            const position1 = await prompt.get(['endereco'])
+                                            const adressAdjusted = position1.endereco.toString()
+                                            teacher.setAdress(nameAdjusted1.toUpperCase(), adressAdjusted.toUpperCase())
+                                            console.log ('endereço alterado com sucesso')
+                                            teacher.search(nameAdjusted1.toUpperCase())
+                                            console.log('Pressione uma tecla para voltar ao menu anterior...')
+                                            await prompt.get(['pressione'])
+                                            break;
+                    
+                                        case '2':
+                                            console.clear ()
+                                            console.log('Insira o nome do professor cujo telefone deseja visualizar:')
+                                            const position2 = await prompt.get(['nome'])
+                                            const nameAdjusted2 = position2.nome.toString()
+                                            teacher.search(nameAdjusted2.toUpperCase())
+                                            console.log('Insira o novo telefone')
+                                            const position3 = await prompt.get(['telefone'])
+                                            const telephoneAdjusted = position3.telefone.toString()
+                                            teacher.setTelephone(nameAdjusted2.toUpperCase(), telephoneAdjusted.toUpperCase())
+                                            console.log ('telefone alterado com sucesso')
+                                            teacher.search(nameAdjusted2.toUpperCase())
+                                            console.log('Pressione uma tecla para voltar ao menu anterior...')
+                                            await prompt.get(['pressione'])
+                                            break;
+                    
+                                        case '3':
+                                            console.clear ()
+                                            console.log('Insira o nome do professor cujo contato de emergência deseja visualizar:')
+                                            const position4 = await prompt.get(['nome'])
+                                            const nameAdjusted3 = position4.nome.toString()
+                                            teacher.search(nameAdjusted3.toUpperCase())
+                                            console.log('Insira o novo nome do contato de emergência')
+                                            const position5 = await prompt.get(['nome'])
+                                            const contactAdjusted = position5.nome.toString()
+                                            teacher.setContact(nameAdjusted3.toUpperCase(), contactAdjusted.toUpperCase())
+                                            console.log ('contato alterado com sucesso')
+                                            teacher.search(nameAdjusted3.toUpperCase())
+                                            console.log('Pressione uma tecla para voltar ao menu anterior...')
+                                            await prompt.get(['pressione'])
+                                            break;
+                
+                                        case '4':
+                                            console.clear ()
+                                            console.log('Insira o nome do professor cujo telefone de emergência deseja visualizar:')
+                                            const position6 = await prompt.get(['nome'])
+                                            const nameAdjusted4 = position6.nome.toString()
+                                            teacher.search(nameAdjusted4.toUpperCase())
+                                            console.log('Insira o novo telefone de emergência')
+                                            const position7 = await prompt.get(['telefone'])
+                                            const phoneAdjusted = position7.telefone.toString()
+                                            teacher.setEmergencyPhone(nameAdjusted4.toUpperCase(), phoneAdjusted.toUpperCase())
+                                            console.log ('telefone alterado com sucesso')
+                                            teacher.search(nameAdjusted4.toUpperCase())
+                                            console.log('Pressione uma tecla para voltar ao menu anterior...')
+                                            await prompt.get(['pressione'])
+                                            break;
+
+                                        default:
+                                            break;
+                                } break;
+                            } break;
+
+                        case '9':
+                            console.clear()
+                            console.log('===== Remover aluno =====')
+                            student.showStudents()
+                            console.log('Insira o nome do aluno que deseja remover:')
+                            const position = await prompt.get(['nome'])
+                            const nameAdjusted7 = position.nome.toString()
+                            student.removeStudent(nameAdjusted7.toUpperCase())
+                            console.log ('Aluno removido com sucesso.')
+                            break;
+
+                        case '10':
+                            console.clear()
+                            console.log('===== Remover professor =====')
+                            teacher.showTeachers()
+                            console.log('Insira o nome do contato que deseja remover:')
+                            const position3 = await prompt.get(['nome'])
+                            const nameAdjusted8 = position3.nome.toString()
+                            teacher.removeTeacher(nameAdjusted8.toUpperCase())
+                            break;
+
+                        default:
+                            break;
+                    }
+                }} break;
+    
+            case '2':
+                let shouldRun4 = true
+                while (shouldRun4) {
+                    console.clear ()    
+                    console.log ('Escolha o que você deseja fazer')
+                    console.log ('1. Alterar seu endereço')
+                    console.log ('2. Alterar seu telefone')
+                    console.log ('3. Alterar o nome do seu contato de emergência')
+                    console.log ('4. Alterar o seu telefone de emergência')
+                    console.log ('5. Inserir nota')
+                    console.log ('6. Remover nota')
+                    console.log ('7. Alterar nota')
+                    console.log ('8. Ver as notas de todos os alunos por disciplina')
+                    console.log ('9. Ver as notas de um aluno específico')
+                    console.log ('10. Retornar ao menu anterior')
+    
+                    const response4 = await prompt.get(['option'])
+                    if (response4.option == '10') { break}
+                    else{
+                        switch (response4.option){
+                            case '1':
+                                console.clear ()
+                                console.log('Insira seu nome:')
+                                const position = await prompt.get(['nome'])
+                                const nameAdjusted1 = position.nome.toString()
+                                teacher.search(nameAdjusted1.toUpperCase())
+                                console.log('Insira o novo endereço')
+                                const position1 = await prompt.get(['endereco'])
+                                const adressAdjusted = position1.endereco.toString()
+                                teacher.setAdress(nameAdjusted1.toUpperCase(), adressAdjusted.toUpperCase())
+                                console.log ('endereço alterado com sucesso')
+                                teacher.search(nameAdjusted1.toUpperCase())
+                                console.log('Pressione uma tecla para voltar ao menu anterior...')
+                                await prompt.get(['pressione'])
+                                break;
+                        
+                            case '2':
+                                console.clear ()
+                                console.log('Insira seu nome:')
+                                const position2 = await prompt.get(['nome'])
+                                const nameAdjusted2 = position2.nome.toString()
+                                teacher.search(nameAdjusted2.toUpperCase())
+                                console.log('Insira o novo telefone')
+                                const position3 = await prompt.get(['telefone'])
+                                const telephoneAdjusted = position3.telefone.toString()
+                                teacher.setTelephone(nameAdjusted2.toUpperCase(), telephoneAdjusted.toUpperCase())
+                                console.log ('telefone alterado com sucesso')
+                                teacher.search(nameAdjusted2.toUpperCase())
+                                console.log('Pressione uma tecla para voltar ao menu anterior...')
+                                await prompt.get(['pressione'])
+                                break;
+                        
+                            case '3':
+                                console.clear ()
+                                console.log('seu nome:')
+                                const position4 = await prompt.get(['nome'])
+                                const nameAdjusted3 = position4.nome.toString()
+                                teacher.search(nameAdjusted3.toUpperCase())
+                                console.log('Insira o novo nome do contato de emergência')
+                                const position5 = await prompt.get(['nome'])
+                                const contactAdjusted = position5.nome.toString()
+                                teacher.setContact(nameAdjusted3.toUpperCase(), contactAdjusted.toUpperCase())
+                                console.log ('contato alterado com sucesso')
+                                teacher.search(nameAdjusted3.toUpperCase())
+                                console.log('Pressione uma tecla para voltar ao menu anterior...')
+                                await prompt.get(['pressione'])
+                                break;
+                    
+                            case '4':
+                                console.clear ()
+                                console.log('Insira seu nome:')
+                                const position6 = await prompt.get(['nome'])
+                                const nameAdjusted4 = position6.nome.toString()
+                                teacher.search(nameAdjusted4.toUpperCase())
+                                console.log('Insira o novo telefone de emergência')
+                                const position7 = await prompt.get(['telefone'])
+                                const phoneAdjusted = position7.telefone.toString()
+                                teacher.setContact(nameAdjusted4.toUpperCase(), phoneAdjusted.toUpperCase())
+                                console.log ('telefone alterado com sucesso')
+                                teacher.search(nameAdjusted4.toUpperCase())
+                                console.log('Pressione uma tecla para voltar ao menu anterior...')
+                                await prompt.get(['pressione'])
+                                break;
+    
+                            case '5':
+                                console.clear ()
+                                console.log ('Insira os dados solicitados abaixo')
+                                const response = await prompt.get(['studentName', 'subject', 'description', 'note'])
+                                const adjustedName = response.studentName.toString()
+                                const adjustedSubject = response.subject.toString()
+                                const adjustedDescription = response.description.toString()
+                
+                                note.insertNote (new Note (
+                                    adjustedName.toUpperCase(),
+                                    adjustedSubject.toUpperCase(),
+                                    adjustedDescription.toString(),
+                                    Number (response.note),
+                                ))
+                                console.log ('Nota inserida com sucesso.')
+                                break;
+                
+                            case '6':
+                                console.clear ()
+                                console.log('===== Remover notas =====')
+                                note.showNote()
+                                console.log ('Insira o noteId da nota a ser removida')
+                                const response1 = await prompt.get(['noteId'])
+                                const adjustedIndex = Number(response1.noteId)
+                                note.removeNote (adjustedIndex)
+                                console.log ('Nota removida com sucesso')
+                                break;
+
+                            case '7':
+                                console.clear ()
+                                console.log('===== Alterar notas =====')
+                                note.showNote()
+                                console.log ('Insira o noteId da nota a ser alterada')
+                                const response2 = await prompt.get(['noteId'])
+                                const adjustedIndex1 = Number(response2.noteId)
+                                console.log ('Insira a nova nota')
+                                const response3 = await prompt.get(['nota'])
+                                const adjustedNote2 = Number(response3.nota)
+
+                                note.changeNote (adjustedIndex1, adjustedNote2)
+                                console.log ('Nota alterada com sucesso')
+                                break;
+
+                            case '8':
+                                console.log('Insira o nome da disciplina:')
+                                const position8 = await prompt.get(['disciplina'])
+                                const nameAdjusted5 = position8.disciplina.toString()
+                                note.searchBySubject(nameAdjusted5.toUpperCase())
+                                console.log('Pressione uma tecla para voltar ao menu anterior...')
+                                await prompt.get(['pressione'])
+                                break;
+                    
+                            case '9':
+                                console.log('Insira o nome do aluno e da disciplina que deseja visualizar:')
+                                const position9 = await prompt.get(['nome'])
+                                const position10 = await prompt.get(['disciplina'])
+                                const nameAdjusted6 = position9.nome.toString()
+                                const subjectAdjusted = position10.disciplina.toString()
+                                note.searchByStudentSubject(nameAdjusted6.toUpperCase(), subjectAdjusted.toUpperCase())
+                                console.log('Pressione uma tecla para voltar ao menu anterior...')
+                                await prompt.get(['pressione'])
+                                break;
+
+                            default: 
+                                break;
+                        }
+                    }
+                } break;
+        
+            case '3':
+                let shouldRun5 = true
+                while (shouldRun5) {
+                    console.clear ()    
+                    console.log ('Escolha o que você deseja fazer')
+                    console.log ('1. Alterar seu endereço')
+                    console.log ('2. Alterar seu telefone')
+                    console.log ('3. Alterar o nome do seu contato de emergência')
+                    console.log ('4. Alterar o seu telefone de emergência')
+                    console.log ('5. Ver todas as suas notas')
+                    console.log ('6. Ver notas por disciplina')
+                    console.log ('7. Retornar ao menu anterior')
+
+                    const response5 = await prompt.get(['option'])
+                    if (response5.option == '7') { break}
+                    else{
+                        switch (response5.option){
+                            case '1':
+                                console.clear ()
+                                console.log('Insira seu nome:')
+                                const position = await prompt.get(['nome'])
+                                const nameAdjusted1 = position.nome.toString()
+                                student.search(nameAdjusted1.toUpperCase())
+                                console.log('Insira o novo endereço')
+                                const position1 = await prompt.get(['endereco'])
+                                const adressAdjusted = position1.endereco.toString()
+                                student.setAdress(nameAdjusted1.toUpperCase(), adressAdjusted.toUpperCase())
+                                console.log ('endereço alterado com sucesso')
+                                student.search(nameAdjusted1.toUpperCase())
+                                console.log('Pressione uma tecla para voltar ao menu anterior...')
+                                await prompt.get(['pressione'])
+                                break;
+                    
+                            case '2':
+                                console.clear ()
+                                console.log('Insira seu nome:')
+                                const position2 = await prompt.get(['nome'])
+                                const nameAdjusted2 = position2.nome.toString()
+                                student.search(nameAdjusted2.toUpperCase())
+                                console.log('Insira o novo telefone')
+                                const position3 = await prompt.get(['telefone'])
+                                const telephoneAdjusted = position3.telefone.toString()
+                                student.setTelephone(nameAdjusted2.toUpperCase(), telephoneAdjusted.toUpperCase())
+                                console.log ('telefone alterado com sucesso')
+                                student.search(nameAdjusted2.toUpperCase())
+                                console.log('Pressione uma tecla para voltar ao menu anterior...')
+                                await prompt.get(['pressione'])
+                                break;
+                    
+                            case '3':
+                                console.clear ()
+                                console.log('seu nome:')
+                                const position4 = await prompt.get(['nome'])
+                                const nameAdjusted3 = position4.nome.toString()
+                                student.search(nameAdjusted3.toUpperCase())
+                                console.log('Insira o novo nome do contato de emergência')
+                                const position5 = await prompt.get(['nome'])
+                                const contactAdjusted = position5.nome.toString()
+                                student.setContact(nameAdjusted3.toUpperCase(), contactAdjusted.toUpperCase())
+                                console.log ('contato alterado com sucesso')
+                                student.search(nameAdjusted3.toUpperCase())
+                                console.log('Pressione uma tecla para voltar ao menu anterior...')
+                                await prompt.get(['pressione'])
+                                break;
+                
+                            case '4':
+                                console.clear ()
+                                console.log('Insira seu nome:')
+                                const position6 = await prompt.get(['nome'])
+                                const nameAdjusted4 = position6.nome.toString()
+                                student.search(nameAdjusted4.toUpperCase())
+                                console.log('Insira o novo telefone de emergência')
+                                const position7 = await prompt.get(['telefone'])
+                                const phoneAdjusted = position7.telefone.toString()
+                                student.setEmergencyPhone(nameAdjusted4.toUpperCase(), phoneAdjusted.toUpperCase())
+                                console.log ('telefone alterado com sucesso')
+                                student.search(nameAdjusted4.toUpperCase())
+                                console.log('Pressione uma tecla para voltar ao menu anterior...')
+                                await prompt.get(['pressione'])
+                                break;
+
+                            case '5':
+                                console.log('Insira seu nome:')
+                                const position8 = await prompt.get(['nome'])
+                                const nameAdjusted5 = position8.nome.toString()
+                                note.searchByStudent(nameAdjusted5.toUpperCase())
+                                console.log('Pressione uma tecla para voltar ao menu anterior...')
+                                await prompt.get(['pressione'])
+                                break;
+                
+                            case '6':
+                                console.log('Insira seu nome e a disciplina que deseja visualizar:')
+                                const position9 = await prompt.get(['nome'])
+                                const position10 = await prompt.get(['disciplina'])
+                                const nameAdjusted6 = position9.nome.toString()
+                                const subjectAdjusted = position10.disciplina.toString()
+                                note.searchByStudentSubject(nameAdjusted6.toUpperCase(), subjectAdjusted.toUpperCase())
+                                console.log('Pressione uma tecla para voltar ao menu anterior...')
+                                await prompt.get(['pressione'])
+                                break;
+
+                            default:
+                            break;
+                        }
+                    }
+                } break;
+    
+            default:
+                break;
+        }
+    }}
+console.clear()
 }
-}*/
+
+main ()
