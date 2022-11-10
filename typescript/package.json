@@ -1,0 +1,17 @@
+{
+  "name": "typescript",
+  "version": "1.0.0",
+  "description": "",
+  "main": "alunos-e-professores.js",
+  "scripts": {
+    "start": "ts-node src/alunos-e-professores",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@types/prompt": "^1.1.4",
+    "prompt": "^1.3.0"
+  }
+}

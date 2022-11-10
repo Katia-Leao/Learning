@@ -1,4 +1,5 @@
 import prompt from 'prompt'
+import {Person} from './classes/Person'
 
 let countStudent: number = 0
 let idStudent: string = ('S-' + countStudent)
@@ -11,7 +12,7 @@ let students: Student [] = []
 let teachers: Teacher [] = []
 let notes: Note [] = []
 
-abstract class Person {
+/*abstract class Person {
         
     protected _name: string
     protected _cpf: string
@@ -32,7 +33,7 @@ abstract class Person {
         this._emergencyPhone = emergencyPhone
         this._id = idStudent || idTeacher
     }
-}
+}*/
 
 class Student extends Person{
         
