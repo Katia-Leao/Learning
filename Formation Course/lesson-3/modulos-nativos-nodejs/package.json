@@ -1,0 +1,20 @@
+{
+  "name": "modulos-nativos-nodejs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node src/index.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "date-fns": "^2.29.3"
+  },
+  "devDependencies": {
+    "eslint": "^8.28.0"
+  }
+}
