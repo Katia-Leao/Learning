@@ -1,7 +1,7 @@
 {
   "name": "aula-05",
   "version": "1.0.0",
-  "description": "",
+  "description": "Baseado no que vimos na ultima Aula vamos criar um servidor web (API) que retorna uma lista de produtos",
   "main": "index.js",
   "type": "module",
   "scripts": {
