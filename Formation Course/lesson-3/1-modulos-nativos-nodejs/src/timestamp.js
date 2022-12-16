@@ -1,9 +1,9 @@
 import { getTime } from "date-fns";
 
 function getTimestamp() {
-	return getTime(new Date());
+  return getTime(new Date());
 }
 
 const timestamp = getTimestamp();
 
-export default timestamp ;
+export default timestamp;

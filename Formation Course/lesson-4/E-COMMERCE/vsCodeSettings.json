@@ -1,0 +1,15 @@
+{
+  "workbench.colorTheme": "Default High Contrast",
+  "window.zoomLevel": 2,
+  "security.workspace.trust.untrustedFiles": "open",
+  "workbench.iconTheme": "material-icon-theme",
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.tabSize": 2,
+  "editor.wordWrap": "on",
+  "files.exclude": {
+    "**/.git": true,
+    "**/node_modules": true,
+    "**/.vscode": true
+  }
+}

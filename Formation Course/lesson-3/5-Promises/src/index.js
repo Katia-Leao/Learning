@@ -15,9 +15,12 @@ criarCliente({ nome: "Leandro", idade: "30" });
 criarCliente({ nome: "Lilian", idade: "38" });
 criarCliente({ nome: "Ricardo", idade: "42" });
 
-/*buscarCientes().then((dados) =>
-console.log ("TERMINOU DE EXECUTAR FUNCAO PROMISE", dados)).catch((err) => console.log(err))*/
+// primeira forma de fazer, com o .then e .catch
+buscarCientes()
+  .then((dados) => console.log("TERMINOU DE EXECUTAR FUNCAO PROMISE", dados))
+  .catch((err) => console.log(err));
 
+// segunda forma de fazer com o async/await
 async function buscarClienteAsync() {
   const dados2 = await buscarCientes();
   console.log(dados2);
