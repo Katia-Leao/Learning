@@ -1,31 +1,28 @@
 import { Request, Response, Router } from "express";
-import { Adress } from "../domain/entities/adress.entity";
+import { PrismaClient } from "@prisma/client";
+import { v4 } from "uuid";
+
+//import { Adress } from "../domain/entities/adress.entity";
 import { AdressDto } from "../domain/dtos/adress.dto";
 
 const adressRoutes = Router();
+const prisma = new PrismaClient();
 
-let adresses: Adress[] = [
-  {
-    id: 1,
-    idUser: 1,
-    street: "Rua A",
-    number: "349A",
-    complement: "apto 302",
-    neighborhood: 1,
-  },
-];
-
-adressRoutes.get("/", (request: Request, response: Response) => {
-  return response.send(adresses);
+adressRoutes.get("/", async (request: Request, response: Response) => {
+  const adresses = await prisma.adress.findMany({});
+  return response.json(adresses);
 });
 
-interface GetParams {
-  id: number;
-}
-
-adressRoutes.get("/:id", (request: Request<GetParams>, response: Response) => {
+adressRoutes.get("/:id", async (request: Request, response: Response) => {
   const { id } = request.params;
-  const adress = adresses.find((x) => x.id == id);
+
+  const adress = await prisma.adress.findFirst({
+    where: {
+      id: {
+        equals: id,
+      },
+    },
+  });
 
   if (!adress) {
     // podemos colocar return response.status(404).send("adress not found!") ou retornar um arquivo json direto. O send analisa se é texto ou json
@@ -34,20 +31,13 @@ adressRoutes.get("/:id", (request: Request<GetParams>, response: Response) => {
     });
   }
 
-  return response.send(adress);
+  return response.json(adress);
 });
 
 adressRoutes.post(
   "/",
-  (request: Request<{}, {}, Adress>, response: Response) => {
+  async (request: Request<{}, {}, AdressDto>, response: Response) => {
     const adress = request.body;
-
-    if (!adress.id) {
-      return response.status(400).json({
-        field: "id",
-        message: "ID is invalid",
-      });
-    }
 
     if (!adress.idUser) {
       return response.status(400).json({
@@ -77,67 +67,92 @@ adressRoutes.post(
       });
     }
 
-    if (!adress.neighborhood) {
+    if (!adress.idNeighborhood) {
       return response.status(400).json({
-        field: "neighborhood id",
-        message: "Neighborhood ID is invalid",
+        field: "idNeighborhood id",
+        message: "idNeighborhood is invalid",
       });
     }
 
-    adresses.push(adress);
-    return response.send(adresses);
+    const createdAdresses = await prisma.adress.create({
+      data: {
+        id: v4(),
+        idUser: adress.idUser,
+        street: adress.street,
+        number: adress.number,
+        complement: adress.complement,
+        idNeighborhood: adress.idNeighborhood,
+      },
+    });
+    return response.json(createdAdresses);
   }
 );
 
 interface PutParams {
-  id: number;
+  id: string;
 }
 
 adressRoutes.put(
   "/:id",
-  (
-    request: Request<PutParams, {}, Omit<AdressDto, "id">>,
-    response: Response
-  ) => {
+  async (request: Request<PutParams, {}, AdressDto>, response: Response) => {
     const { id } = request.params;
-    const adressIndex = adresses.findIndex((x) => x.id == id);
+    const adressData = request.body;
+    const adress = await prisma.adress.findFirst({
+      where: {
+        id: {
+          equals: id,
+        },
+      },
+    });
 
-    if (adressIndex === -1) {
+    if (!adress) {
       return response.status(404).json({
         message: "Not found!",
       });
     }
 
-    adresses[adressIndex].street = request.body.street;
-    adresses[adressIndex].number = request.body.number;
-    adresses[adressIndex].complement = request.body.complement;
-    adresses[adressIndex].neighborhood = request.body.neighborhood;
+    const updatedAdress = await prisma.adress.update({
+      data: {
+        idUser: adressData.idUser,
+        street: adressData.street,
+        number: adressData.number,
+        complement: adressData.complement,
+        idNeighborhood: adressData.idNeighborhood,
+      },
+      where: {
+        id: id,
+      },
+    });
 
-    return response.send(adresses[adressIndex]);
+    return response.json(updatedAdress);
   }
 );
 
-interface DeleteParams {
-  id: number;
-}
+adressRoutes.delete("/:id", async (request: Request, response: Response) => {
+  const { id } = request.params;
+  const adress = await prisma.adress.findFirst({
+    where: {
+      id: {
+        equals: id,
+      },
+    },
+  });
 
-adressRoutes.delete(
-  "/:id",
-  (request: Request<DeleteParams>, response: Response) => {
-    const { id } = request.params;
-    const adressIndex = adresses.findIndex((x) => x.id == id);
-
-    if (adressIndex === -1) {
-      return response.status(404).json({
-        message: "Not found!",
-      });
-    }
-
-    adresses = adresses.filter((x) => x.id !== Number(id));
-    return response.json({
-      message: "Deleted Successfully",
+  if (!adress) {
+    return response.status(404).json({
+      message: "Adress not found!",
     });
   }
-);
 
-export { adressRoutes, adresses };
+  await prisma.adress.delete({
+    where: {
+      id: id,
+    },
+  });
+
+  return response.json({
+    message: "Deleted Successfully",
+  });
+});
+
+export { adressRoutes };

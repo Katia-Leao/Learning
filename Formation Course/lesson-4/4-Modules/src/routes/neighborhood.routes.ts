@@ -1,56 +1,54 @@
 import { Request, Response, Router } from "express";
-import { Neighborhood } from "../domain/entities/neighborhood.entity";
+import { PrismaClient } from "@prisma/client";
+import { v4 } from "uuid";
+
+//import { Neighborhood } from "../domain/entities/neighborhood.entity";
 import { NeighborhoodDto } from "../domain/dtos/neighborhood.dto";
 
 const neighborhoodRoutes = Router();
+const prisma = new PrismaClient();
 
-let neighborhoods: Neighborhood[] = [
-  {
-    id: 1,
-    neighborhood: "Lourdes",
-    city: "Belo Horizonte",
-    state: "Minas Gerais",
-  },
-];
-
-neighborhoodRoutes.get("/", (request: Request, response: Response) => {
-  return response.send(neighborhoods);
+neighborhoodRoutes.get("/", async (request: Request, response: Response) => {
+  const neighborhoods = await prisma.neighborhood.findMany({
+    include: {
+      adress: true,
+    },
+  });
+  return response.json(neighborhoods);
 });
 
-interface GetParams {
-  id: number;
-}
+neighborhoodRoutes.get("/:id", async (request: Request, response: Response) => {
+  const { id } = request.params;
 
-neighborhoodRoutes.get(
-  "/:id",
-  (request: Request<GetParams>, response: Response) => {
-    const { id } = request.params;
-    const neighborhood = neighborhoods.find((x) => x.id == id);
+  const neighborhood = await prisma.neighborhood.findFirst({
+    where: {
+      id: {
+        equals: id,
+      },
+    },
+    include: {
+      adress: true,
+    },
+  });
 
-    if (!neighborhood) {
-      return response.status(404).send("neighborhood not found!");
-    }
-
-    return response.send(neighborhood);
+  if (!neighborhood) {
+    return response.status(404).json({
+      message: "neighborhood not found!",
+    });
   }
-);
+
+  return response.json(neighborhood);
+});
 
 neighborhoodRoutes.post(
   "/",
-  (request: Request<{}, {}, Neighborhood>, response: Response) => {
+  async (request: Request<{}, {}, NeighborhoodDto>, response: Response) => {
     const neighborhood = request.body;
 
-    if (!neighborhood.id) {
+    if (!neighborhood.name) {
       return response.status(400).send({
-        field: "id",
-        message: "ID is invalid",
-      });
-    }
-
-    if (!neighborhood.neighborhood) {
-      return response.status(400).send({
-        field: "neighborhood",
-        message: "Neighborhood is invalid",
+        field: "name",
+        message: "Name is invalid",
       });
     }
 
@@ -68,76 +66,87 @@ neighborhoodRoutes.post(
       });
     }
 
-    neighborhoods.push(neighborhood);
-    return response.send(neighborhoods);
+    const createdNeighborhood = await prisma.neighborhood.create({
+      data: {
+        id: v4(),
+        adress: neighborhood.adresses,
+        name: neighborhood.name,
+        city: neighborhood.city,
+        state: neighborhood.state,
+      },
+    });
+    return response.send(createdNeighborhood);
   }
 );
 
 interface PutParams {
-  id: number;
+  id: string;
 }
 
 neighborhoodRoutes.put(
   "/:id",
-  (
+  async (
     request: Request<PutParams, {}, Omit<NeighborhoodDto, "id">>,
     response: Response
   ) => {
     const { id } = request.params;
-    const neighborhoodIndex = neighborhoods.findIndex((x) => x.id == id);
+    const neighborhoodData = request.body;
+    const neighborhood = await prisma.neighborhood.findFirst({
+      where: {
+        id: {
+          equals: id,
+        },
+      },
+    });
 
-    if (neighborhoodIndex === -1) {
+    if (!neighborhood) {
       return response.status(404).send("Not found!");
     }
 
-    if (!neighborhoods[neighborhoodIndex].neighborhood) {
-      return response.status(400).send({
-        field: "neighborhood",
-        message: "Neighborhood is invalid",
-      });
-    }
+    const updatedNeighborhood = await prisma.neighborhood.update({
+      data: {
+        adress: neighborhoodData.adresses,
+        name: neighborhoodData.name,
+        city: neighborhoodData.city,
+        state: neighborhoodData.state,
+      },
+      where: {
+        id: id,
+      },
+    });
 
-    if (!neighborhoods[neighborhoodIndex].city) {
-      return response.status(400).send({
-        field: "city",
-        message: "City is invalid",
-      });
-    }
-
-    if (!neighborhoods[neighborhoodIndex].state) {
-      return response.status(400).send({
-        field: "state",
-        message: "State is invalid",
-      });
-    }
-
-    neighborhoods[neighborhoodIndex].neighborhood = request.body.neighborhood;
-    neighborhoods[neighborhoodIndex].city = request.body.city;
-    neighborhoods[neighborhoodIndex].state = request.body.state;
-
-    return response.send(neighborhoods[neighborhoodIndex]);
+    return response.json(updatedNeighborhood);
   }
 );
-
-interface DeleteParams {
-  id: number;
-}
 
 neighborhoodRoutes.delete(
   "/:id",
-  (request: Request<DeleteParams>, response: Response) => {
+  async (request: Request, response: Response) => {
     const { id } = request.params;
-    const neighborhoodIndex = neighborhoods.findIndex((x) => x.id == id);
+    const neighborhood = await prisma.neighborhood.findFirst({
+      where: {
+        id: {
+          equals: id,
+        },
+      },
+    });
 
-    if (neighborhoodIndex === -1) {
+    if (!neighborhood) {
       return response.status(404).json({
-        message: "Not found!",
+        message: "Neighborhood not found!",
       });
     }
 
-    neighborhoods = neighborhoods.filter((x) => x.id !== Number(id));
-    return response.send("Deleted Successfully");
+    await prisma.neighborhood.delete({
+      where: {
+        id: id,
+      },
+    });
+
+    return response.json({
+      message: "Deleted Successfully",
+    });
   }
 );
 
-export { neighborhoodRoutes, neighborhoods };
+export { neighborhoodRoutes };

@@ -1,157 +1,146 @@
 import { Request, Response, Router } from "express";
-import { Product } from "../domain/entities/product.entity";
+import { PrismaClient } from "@prisma/client";
+import { v4 } from "uuid";
+
+//import { Product } from "../domain/entities/product.entity";
 import { ProductDto } from "../domain/dtos/product.dto";
 
 const productRoutes = Router();
+const prisma = new PrismaClient();
 
-let products: Product[] = [
-  {
-    id: 1,
-    name: "O Um anel",
-    description:
-      "chocolate amargo 70% folhado a ouro servido num porta jóias de brigadeiro de frutas vermelhas",
-    price: 50,
-    quantity: 10,
-  },
-];
-
-productRoutes.get("/", (request: Request, response: Response) => {
-  return response.send(products);
+productRoutes.get("/", async (request: Request, response: Response) => {
+  const products = await prisma.product.findMany();
+  return response.json(products);
 });
 
-interface GetParams {
-  id: number;
-}
-
-productRoutes.get("/:id", (request: Request<GetParams>, response: Response) => {
+productRoutes.get("/:id", async (request: Request, response: Response) => {
   const { id } = request.params;
-  const product = products.find((x) => x.id == id);
+  const product = await prisma.product.findFirst({
+    where: {
+      id: {
+        equals: id,
+      },
+    },
+  });
 
   if (!product) {
-    return response.status(404).send("product not found!");
+    return response.status(404).json({
+      message: "product not found!",
+    });
   }
 
-  return response.send(product);
+  return response.json(product);
 });
 
 productRoutes.post(
   "/",
-  (request: Request<{}, {}, Product>, response: Response) => {
+  async (request: Request<{}, {}, ProductDto>, response: Response) => {
     const product = request.body;
 
-    if (!product.id) {
-      return response.status(400).send({
-        field: "id",
-        message: "ID is invalid",
-      });
-    }
-
     if (!product.name) {
-      return response.status(400).send({
+      return response.status(400).json({
         field: "name",
         message: "Name is invalid",
       });
     }
 
     if (!product.description) {
-      return response.status(400).send({
+      return response.status(400).json({
         field: "description",
         message: "Description is invalid",
       });
     }
 
     if (!product.price) {
-      return response.status(400).send({
+      return response.status(400).json({
         field: "price",
         message: "Price is invalid",
       });
     }
 
     if (!product.quantity) {
-      return response.status(400).send({
+      return response.status(400).json({
         field: "quantity",
         message: "Quantity is invalid",
       });
     }
-
-    products.push(product);
-    return response.send(products);
+    const createdProduct = await prisma.product.create({
+      data: {
+        id: v4(),
+        name: product.name,
+        description: product.description,
+        price: product.price,
+        quantity: product.quantity,
+      },
+    });
+    return response.json(createdProduct);
   }
 );
 
 interface PutParams {
-  id: number;
+  id: string;
 }
 
 productRoutes.put(
   "/:id",
-  (
-    request: Request<PutParams, {}, Omit<ProductDto, "id">>,
-    response: Response
-  ) => {
+  async (request: Request<PutParams, {}, ProductDto>, response: Response) => {
     const { id } = request.params;
-    const productIndex = products.findIndex((x) => x.id == id);
+    const productData = request.body;
+    const product = await prisma.product.findFirst({
+      where: {
+        id: {
+          equals: id,
+        },
+      },
+    });
 
-    if (productIndex === -1) {
-      return response.status(404).send("Not found!");
-    }
-
-    if (!products[productIndex].name) {
-      return response.status(400).send({
-        field: "name",
-        message: "Name is invalid",
-      });
-    }
-
-    if (!products[productIndex].description) {
-      return response.status(400).send({
-        field: "description",
-        message: "Description is invalid",
-      });
-    }
-
-    if (!products[productIndex].price) {
-      return response.status(400).send({
-        field: "price",
-        message: "Price is invalid",
-      });
-    }
-
-    if (!products[productIndex].quantity) {
-      return response.status(400).send({
-        field: "quantity",
-        message: "Quantity is invalid",
-      });
-    }
-
-    products[productIndex].name = request.body.name;
-    products[productIndex].description = request.body.description;
-    products[productIndex].price = request.body.price;
-    products[productIndex].quantity = request.body.quantity;
-
-    return response.send(products[productIndex]);
-  }
-);
-
-interface DeleteParams {
-  id: number;
-}
-
-productRoutes.delete(
-  "/:id",
-  (request: Request<DeleteParams>, response: Response) => {
-    const { id } = request.params;
-    const productIndex = products.findIndex((x) => x.id == id);
-
-    if (productIndex === -1) {
+    if (!product) {
       return response.status(404).json({
         message: "Not found!",
       });
     }
 
-    products = products.filter((x) => x.id !== Number(id));
-    return response.send("Deleted Successfully");
+    const updatedProduct = await prisma.product.update({
+      data: {
+        name: productData.name,
+        description: productData.description,
+        price: productData.price,
+        quantity: productData.quantity,
+      },
+      where: {
+        id: id,
+      },
+    });
+
+    return response.json(updatedProduct);
   }
 );
+
+productRoutes.delete("/:id", async (request: Request, response: Response) => {
+  const { id } = request.params;
+  const product = await prisma.product.findFirst({
+    where: {
+      id: {
+        equals: id,
+      },
+    },
+  });
+
+  if (!product) {
+    return response.status(404).json({
+      message: "Product not found!",
+    });
+  }
+
+  await prisma.product.delete({
+    where: {
+      id: id,
+    },
+  });
+
+  return response.json({
+    message: "Deleted Successfully",
+  });
+});
 
 export { productRoutes };

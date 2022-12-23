@@ -1,6 +1,6 @@
 export interface NeighborhoodDto {
-  id: number;
-  neighborhood: string;
+  adresses: object;
+  name: string;
   city: string;
   state: string;
 }
